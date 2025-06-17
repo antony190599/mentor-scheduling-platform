@@ -16,9 +16,11 @@ import {
   primaryKey,
   unique,
   index,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import type { AdapterAccount } from 'next-auth/adapters';
+import { AdapterAccount } from 'next-auth/adapters';
+
 
 
 /* ───────────── ENUMs ───────────── */
@@ -33,49 +35,86 @@ export const users = pgTable('users', {
   image         : text('image'),  // Auth.js avatar
   emailVerified : timestamp('email_verified', { withTimezone: true }),
   password      : text('password'),   // optional hashed password for local login
-  googleId      : text('google_id'),  // optional quick link
+  invalidLoginAttempts: integer('invalid_login_attempts').default(0).notNull(),
+  lockedAt    : timestamp('locked_at', { withTimezone: true }),
   role          : userRoleEnum('role').notNull(),
   createdAt     : timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 /* ───────────── NextAuth tables ───────────── */
 
-export const accounts = pgTable('accounts', {
-  id: uuid('id').primaryKey(),
-  userId: uuid('user_id').notNull()
-                    .references(() => users.id, { onDelete: 'cascade' }),
-  type: text('type').$type<AdapterAccount['type']>().notNull(),
-  provider: text('provider').notNull(),
-  providerAccountId: text('provider_account_id').notNull(),
-  refreshToken: text('refresh_token'),
-  accessToken: text('access_token'),
-  expiresAt: integer('expires_at'),
-  tokenType: text('token_type'),
-  scope: text('scope'),
-  idToken: text('id_token'),
-  sessionState: text('session_state'),
-}, (t) => [
-    index('idx_accounts_user').on(t.userId),
-]);
+export const accounts = pgTable(
+  "account",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccount>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (account) => [
+    {
+      compoundKey: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
+    },
+  ]
+)
 
-export const sessions = pgTable('sessions', {
-  sessionToken : text('session_token').primaryKey(),
-  userId       : uuid('user_id').notNull()
-                   .references(() => users.id, { onDelete: 'cascade' }),
-  expires      : timestamp('expires', { withTimezone: true }).notNull(),
-});
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+})
 
 export const verificationTokens = pgTable(
-  'verification_tokens',
+  "verificationToken",
   {
-    identifier : text('identifier').notNull(),
-    token      : text('token').notNull(),
-    expires    : timestamp('expires', { withTimezone: true }).notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
   },
-  (vt) => ({
-    pk: primaryKey(vt.identifier, vt.token),
-  }),
-);
+  (verificationToken) => [
+    {
+      compositePk: primaryKey({
+        columns: [verificationToken.identifier, verificationToken.token],
+      }),
+    },
+  ]
+)
+
+export const authenticators = pgTable(
+  "authenticator",
+  {
+    credentialID: text("credentialID").notNull().unique(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
+    counter: integer("counter").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: boolean("credentialBackedUp").notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => [
+    {
+      compositePK: primaryKey({
+        columns: [authenticator.userId, authenticator.credentialID],
+      }),
+    },
+  ]
+)
 
 /* ───────────── Mentor availability ───────────── */
 export const mentorAvailability = pgTable(
