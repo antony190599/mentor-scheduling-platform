@@ -1,0 +1,52 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+package-lock.json
+.npmrc
+
+# testing
+coverage
+
+# next.js
+.next/
+out/
+build
+
+# misc
+.DS_Store
+*.pem
+/.idea
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# turbo
+**/.turbo/**/*
+!.turbo/config.json
+
+test-report.xml
+.env
+cypress.env.json
+screenshots
+
+.yalc/
+docker/Dockerfile
+
+.yarn/
+.yarnrc
+.yarn-1.19.0.cjs
+
+/build
+packages/**/dist

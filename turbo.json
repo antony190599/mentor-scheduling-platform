@@ -1,0 +1,30 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": [".env", "**/.env.*local", "**/.env", "tsconfig.json"],
+    "globalEnv": ["PORT", "NEXT_PUBLIC_ENVIRONMENT", "ANALYZE"],
+    "tasks": {
+     "build": {
+        "outputs": ["apps/min-commerce-nextjs/.next/**", "apps/min-commerce-react/.next/**"],
+        "dependsOn": ["^build"],
+        "env": ["NEXT_PUBLIC_API_HOST"],
+        "cache": false
+      },
+      "storybook": {
+        "cache": false,
+        "persistent": true,
+        "dependsOn": ["^build"]
+
+      },
+      "lint": {
+        "cache": false,
+        "dependsOn": ["^build"]
+      },
+      "dev": {
+        "cache": false,
+        "persistent": true
+      },
+      "clean": {
+        "cache": false
+      }
+    }
+  }
