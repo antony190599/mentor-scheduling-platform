@@ -12,7 +12,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:drop": "drizzle-kit drop"
+    "db:drop": "drizzle-kit drop",
+    "db:seed": "tsx src/database/seed.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",
@@ -75,9 +76,11 @@
     "@types/react-dom": "^19",
     "@types/styled-components": "^5.1.34",
     "@types/uuid": "^10.0.0",
+    "dotenv": "^16.5.0",
     "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
   },

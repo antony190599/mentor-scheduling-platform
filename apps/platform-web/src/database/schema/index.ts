@@ -6,7 +6,6 @@ import {
   pgTable,
   pgEnum,
   uuid,
-  serial,
   text,
   integer,
   timestamp,
@@ -116,13 +115,43 @@ export const authenticators = pgTable(
   ]
 )
 
+/* ───────────── Profiles ───────────── */
+
+// Mentor
+export const mentorProfiles = pgTable(
+  'mentor_profiles',
+  {
+    id        : uuid('id').primaryKey(),
+    userId    : uuid('user_id').notNull()
+                 .references(() => users.id, { onDelete: 'cascade' }),
+    bio       : text('bio'),
+    expertise : text('expertise'),
+    createdAt : timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+);
+
+// Entrepreneur
+export const entrepreneurProfiles = pgTable(
+  'entrepreneur_profiles',
+  {
+    id        : uuid('id').primaryKey(),
+    userId    : uuid('user_id').notNull()
+                 .references(() => users.id, { onDelete: 'cascade' }),
+    bio       : text('bio'),
+    business   : text('business'), // Name of the business or startup
+    industry  : text('industry'), // Industry sector of the business
+    createdAt : timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+);
+
+
 /* ───────────── Mentor availability ───────────── */
 export const mentorAvailability = pgTable(
   'mentor_availability',
   {
-    id        : serial('id').primaryKey(),
+    id        : uuid('id').primaryKey(),
     mentorId  : uuid('mentor_id').notNull()
-                 .references(() => users.id, { onDelete: 'cascade' }),
+                 .references(() => mentorProfiles.id, { onDelete: 'cascade' }),
     weekday   : integer('weekday').notNull(), // 0-6 for Sunday to Saturday
     startTime : time('start_time').notNull(),
     endTime   : time('end_time').notNull(),
@@ -161,7 +190,7 @@ export const bookings = pgTable(
 
 /* ───────────── Feedback & report ───────────── */
 export const sessionFeedback = pgTable('session_feedback', {
-  id                  : serial('id').primaryKey(),
+  id                  : uuid('id').primaryKey(),
   bookingId           : uuid('booking_id').notNull()
                           .references(() => bookings.id, { onDelete: 'cascade' })
                           .unique(),
@@ -175,7 +204,7 @@ export const sessionFeedback = pgTable('session_feedback', {
 export const creditTransactions = pgTable(
   'credit_transactions',
   {
-    id             : serial('id').primaryKey(),
+    id             : uuid('id').primaryKey(),
     entrepreneurId : uuid('entrepreneur_id').notNull()
                       .references(() => users.id, { onDelete: 'cascade' }),
     amount         : integer('amount').notNull(), // +ve for credits, -ve for consumption

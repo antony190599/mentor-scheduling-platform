@@ -39,7 +39,7 @@ CREATE TABLE "bookings" (
 );
 --> statement-breakpoint
 CREATE TABLE "credit_transactions" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"entrepreneur_id" uuid NOT NULL,
 	"amount" integer NOT NULL,
 	"reason" text,
@@ -48,8 +48,17 @@ CREATE TABLE "credit_transactions" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "entrepreneur_profiles" (
+	"id" uuid PRIMARY KEY NOT NULL,
+	"user_id" uuid NOT NULL,
+	"bio" text,
+	"business" text,
+	"industry" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "mentor_availability" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"mentor_id" uuid NOT NULL,
 	"weekday" integer NOT NULL,
 	"start_time" time NOT NULL,
@@ -60,8 +69,16 @@ CREATE TABLE "mentor_availability" (
 	CONSTRAINT "uq_availability_mentor_weekday_time" UNIQUE("mentor_id","weekday","start_time")
 );
 --> statement-breakpoint
+CREATE TABLE "mentor_profiles" (
+	"id" uuid PRIMARY KEY NOT NULL,
+	"user_id" uuid NOT NULL,
+	"bio" text,
+	"expertise" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "session_feedback" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"booking_id" uuid NOT NULL,
 	"mentor_rating" integer,
 	"entrepreneur_rating" integer,
@@ -103,7 +120,9 @@ ALTER TABLE "bookings" ADD CONSTRAINT "bookings_entrepreneur_id_users_id_fk" FOR
 ALTER TABLE "credit_transactions" ADD CONSTRAINT "credit_transactions_entrepreneur_id_users_id_fk" FOREIGN KEY ("entrepreneur_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_transactions" ADD CONSTRAINT "credit_transactions_booking_id_bookings_id_fk" FOREIGN KEY ("booking_id") REFERENCES "public"."bookings"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "credit_transactions" ADD CONSTRAINT "credit_transactions_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "mentor_availability" ADD CONSTRAINT "mentor_availability_mentor_id_users_id_fk" FOREIGN KEY ("mentor_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "entrepreneur_profiles" ADD CONSTRAINT "entrepreneur_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "mentor_availability" ADD CONSTRAINT "mentor_availability_mentor_id_mentor_profiles_id_fk" FOREIGN KEY ("mentor_id") REFERENCES "public"."mentor_profiles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "mentor_profiles" ADD CONSTRAINT "mentor_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session_feedback" ADD CONSTRAINT "session_feedback_booking_id_bookings_id_fk" FOREIGN KEY ("booking_id") REFERENCES "public"."bookings"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_booking_mentor_time" ON "bookings" USING btree ("mentor_id","start_time");--> statement-breakpoint
