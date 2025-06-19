@@ -171,6 +171,7 @@ export default function LoginForm({
                   variant="secondary"
                   onClick={() => setShowPasswordField(false)}
                   text="Continue with another method"
+                  textWrapperClassName="text-black"
                 />
               </div>
             ) : (

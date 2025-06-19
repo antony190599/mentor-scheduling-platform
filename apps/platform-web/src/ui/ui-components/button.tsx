@@ -119,7 +119,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {text && (
           <div
             className={cn(
-              "min-w-0 truncate text-white",
+              "min-w-0 truncate",
               shortcut && "flex-1 text-left",
               textWrapperClassName,
             )}

@@ -176,6 +176,7 @@ export const EmailSignIn = ({ next }: { next?: string }) => {
               setAuthMethod("email");
             },
           })}
+          textWrapperClassName="text-white"
           loading={clickedMethod === "email" || isPending}
           disabled={clickedMethod && clickedMethod !== "email"}
         />
