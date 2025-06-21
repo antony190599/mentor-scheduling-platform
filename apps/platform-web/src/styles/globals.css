@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root,
 .light {
@@ -130,7 +131,9 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
-@theme {
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
   --color-bg-default: var(--bg-default);
   --color-bg-muted: var(--bg-muted);
   --color-bg-subtle: var(--bg-subtle);
@@ -154,6 +157,10 @@
   --color-content-attention: var(--content-attention);
   --color-content-error: var(--content-error);
 
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -186,6 +193,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 code {
