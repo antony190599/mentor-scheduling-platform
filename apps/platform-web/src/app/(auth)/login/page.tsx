@@ -9,7 +9,7 @@ export default function LoginPage() {
     <AuthLayout showTerms>
       <div className="w-full max-w-sm">
         <h3 className="text-center text-xl font-semibold">
-          Log in to your Dub account
+          Log in to your Mentah account
         </h3>
         <div className="mt-8">
           <LoginForm />
